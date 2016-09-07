@@ -1,0 +1,18 @@
+FROM debian:latest
+MAINTAINER Jean Baptiste Favre <docker@jbfavre.org>
+
+ENV SHELL "/bin/bash"
+ENV DEBIAN_FRONTEND noninteractive
+ENV TERM 1
+
+RUN echo 'deb http://ftp.fr.debian.org/debian/ jessie-backports main contrib non-free' > /etc/apt/sources.list \
+ && echo 'deb http://ftp.fr.debian.org/debian/ jessie main contrib non-free' >> /etc/apt/sources.list \
+ && echo 'deb http://security.debian.org/debian-security/ jessie/updates main contrib non-free' >> /etc/apt/sources.list \
+ && echo 'Package: *' > /etc/apt/preferences \
+ && echo 'Pin: release a=jessie-backports' >> /etc/apt/preferences \
+ && echo 'Pin-Priority: 900' >> /etc/apt/preferences \
+ && /usr/bin/apt-get update -yqq \
+ && /usr/bin/apt-get upgrade --no-install-recommends -y \
+ && /usr/bin/apt-get install --no-install-recommends -y zabbix-server-mysql=1:3.0.4+dfsg-1~bpo8+1 snmp-mibs-downloader \
+ && /usr/bin/chsh -s /bin/bash root \
+ && /bin/rm /bin/sh && ln -s /bin/bash /bin/sh
