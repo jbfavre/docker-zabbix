@@ -1,0 +1,38 @@
+version: '2'
+services:
+    mariadb:
+        image: mariadb
+        environment:
+            - MYSQL_USER=zabbix
+            - MYSQL_PASSWORD=zabbix
+            - MYSQL_DATABASE=zabbix
+            - MYSQL_ROOT_PASSWORD=zabbix
+        volumes:
+            - ${docker_zabbix_root_dir}/data/mariadb/config:/etc/mysql/conf.d
+            - ${docker_zabbix_root_dir}/data/mariadb/data:/var/lib/mysql
+            - ${docker_zabbix_root_dir}/data/mariadb/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+        ports:
+            - '3306:3306'
+
+    frontend:
+        image: jbfavre/zabbix-frontend-php
+        restart: always
+        depends_on:
+            - zabbix-server
+            - mariadb
+        volumes:
+            - ${docker_zabbix_root_dir}/data/zabbix-frontend:/home/docker
+        ports:
+            - '80:80'
+        command: /home/docker/entrypoint.sh
+
+    zabbix-server:
+        image: jbfavre/zabbix-server-mysql
+        restart: always
+        depends_on:
+            - mariadb
+        volumes:
+            - ${docker_zabbix_root_dir}/data/zabbix-server:/home/docker
+        ports:
+            - '10051:10051'
+        command: /home/docker/entrypoint.sh
