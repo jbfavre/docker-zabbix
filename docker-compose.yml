@@ -16,6 +16,9 @@ services:
 
     frontend:
         image: jbfavre/zabbix-frontend-php
+        build:
+            context: .
+            dockerfile: Dockerfile.frontend
         restart: always
         depends_on:
             - zabbix-server
@@ -28,6 +31,9 @@ services:
 
     zabbix-server:
         image: jbfavre/zabbix-server-mysql
+        build:
+            context: .
+            dockerfile: Dockerfile.zabbix
         restart: always
         depends_on:
             - mariadb
